@@ -1,0 +1,138 @@
+version: "3.8"
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: job-platform-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: job_matching_db
+      MYSQL_USER: jobuser
+      MYSQL_PASSWORD: jobpass123
+      MYSQL_ROOT_HOST: "%"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database/01-SCHEMA.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+    networks:
+      - job-platform-network
+    command: --default-authentication-plugin=mysql_native_password --max_connections=1000
+
+  # Spring Boot Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: job-platform-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/job_matching_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      JWT_SECRET: your-super-secret-key-change-in-production-at-least-256-bits-long
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./backend/src:/app/src
+      - ~/.m2:/root/.m2
+    networks:
+      - job-platform-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/health"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: job-platform-frontend
+    environment:
+      VITE_API_URL: http://localhost:8080/api/v1
+      NODE_ENV: development
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    networks:
+      - job-platform-network
+    command: npm run dev
+
+  # Redis Cache (Optional, for future use)
+  redis:
+    image: redis:7-alpine
+    container_name: job-platform-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - job-platform-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 10s
+      retries: 5
+      interval: 5s
+
+  # Elasticsearch (Optional, for future full-text search)
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+  #   container_name: job-platform-elasticsearch
+  #   environment:
+  #     - discovery.type=single-node
+  #     - xpack.security.enabled=false
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #   ports:
+  #     - "9200:9200"
+  #   volumes:
+  #     - elasticsearch-data:/usr/share/elasticsearch/data
+  #   networks:
+  #     - job-platform-network
+
+  # Kibana (Optional, for Elasticsearch visualization)
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:8.10.0
+  #   container_name: job-platform-kibana
+  #   environment:
+  #     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+  #   ports:
+  #     - "5601:5601"
+  #   depends_on:
+  #     - elasticsearch
+  #   networks:
+  #     - job-platform-network
+
+volumes:
+  mysql-data:
+    driver: local
+  redis-data:
+    driver: local
+  # elasticsearch-data:
+  #   driver: local
+
+networks:
+  job-platform-network:
+    driver: bridge
+
+# Usage:
+# docker-compose up              # Start all services
+# docker-compose down            # Stop all services
+# docker-compose logs -f         # View logs
+# docker-compose logs backend    # View backend logs only
+# docker-compose exec mysql mysql -u root -p job_matching_db  # Access MySQL
