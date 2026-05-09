@@ -1,5 +1,6 @@
 package com.jobmatch.api.controller;
 
+import com.jobmatch.api.model.dto.ApiResponse;
 import com.jobmatch.api.model.dto.UserSkillRequest;
 import com.jobmatch.api.model.entity.User;
 import com.jobmatch.api.model.entity.UserSkill;
@@ -21,7 +22,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/users")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class UserController {
     
     @Autowired
@@ -233,30 +233,5 @@ public class UserController {
         }
     }
     
-    /**
-     * Generic API Response wrapper
-     */
-    public static class ApiResponse<T> {
-        private boolean success;
-        private String message;
-        private T data;
-        
-        public ApiResponse(boolean success, String message, T data) {
-            this.success = success;
-            this.message = message;
-            this.data = data;
-        }
-        
-        public boolean isSuccess() {
-            return success;
-        }
-        
-        public String getMessage() {
-            return message;
-        }
-        
-        public T getData() {
-            return data;
-        }
-    }
+
 }

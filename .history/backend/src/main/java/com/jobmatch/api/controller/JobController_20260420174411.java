@@ -6,8 +6,6 @@ import com.jobmatch.api.model.dto.JobSearchCriteria;
 import com.jobmatch.api.model.entity.Job;
 import com.jobmatch.api.service.CompanyService;
 import com.jobmatch.api.service.JobService;
-import com.jobmatch.api.service.UserService;
-import com.jobmatch.api.model.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,9 +32,6 @@ public class JobController {
     
     @Autowired
     private CompanyService companyService;
-    
-    @Autowired
-    private UserService userService;
     
     /**
      * GET /api/v1/jobs/{id}
@@ -292,8 +287,8 @@ public class JobController {
         try {
             return Long.parseLong(resolvedAuth.getName());
         } catch (NumberFormatException ex) {
-            User user = userService.getUserByEmail(resolvedAuth.getName());
-            return user != null ? user.getId() : null;
+            log.warn("Unable to parse authenticated principal '{}' as userId", resolvedAuth.getName());
+            return null;
         }
     }
 }

@@ -4,6 +4,7 @@ import lombok.*;
 
 import jakarta.persistence.*;
 import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * JobSkill Entity
@@ -47,6 +48,7 @@ public class JobSkill {
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id", insertable = false, updatable = false)
+    @JsonIgnore
     private Job job;
     
     @ManyToOne(fetch = FetchType.EAGER)

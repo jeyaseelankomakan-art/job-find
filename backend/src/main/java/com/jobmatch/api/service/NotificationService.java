@@ -158,12 +158,13 @@ public class NotificationService {
      * Notify when company is verified
      */
     @Async
-    public void notifyCompanyVerified(Long companyId) {
+    public void notifyCompanyVerified(Long companyId, Long userId) {
         log.info("Sending company verified notification for company: {}", companyId);
         
         // TODO: Query to get company admin and send notification
         
         Notification notification = Notification.builder()
+                .userId(userId)
                 .type(Notification.NotificationType.COMPANY_VERIFIED)
                 .title("Company Verified")
                 .message("Your company has been verified by admin")
@@ -197,12 +198,13 @@ public class NotificationService {
      * Notify when job is published
      */
     @Async
-    public void notifyJobPublished(Long jobId, Long companyId) {
+    public void notifyJobPublished(Long jobId, Long companyId, Long userId) {
         log.info("Sending job published notification for job: {}", jobId);
         
         // TODO: Query to get matching job seekers and send notifications
         
         Notification notification = Notification.builder()
+                .userId(userId)
                 .type(Notification.NotificationType.JOB_PUBLISHED)
                 .title("New Job Posted")
                 .message("A new job that matches your profile has been posted")
@@ -217,12 +219,13 @@ public class NotificationService {
      * Notify when job is closed
      */
     @Async
-    public void notifyJobClosed(Long jobId) {
+    public void notifyJobClosed(Long jobId, Long userId) {
         log.info("Sending job closed notification for job: {}", jobId);
         
         // TODO: Query to get applicants and send notifications
         
         Notification notification = Notification.builder()
+                .userId(userId)
                 .type(Notification.NotificationType.JOB_CLOSED)
                 .title("Job Closed")
                 .message("A job you applied for has been closed")

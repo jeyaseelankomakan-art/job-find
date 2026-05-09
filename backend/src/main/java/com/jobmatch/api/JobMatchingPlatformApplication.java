@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * Job Matching Platform - Production-level implementation
  */
 @SpringBootApplication
-@Configuration
 @EnableAsync
 @EnableScheduling
 @EnableCaching

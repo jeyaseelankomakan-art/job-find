@@ -9,7 +9,7 @@ const jobService = {
   },
 
   searchJobs: async (params = {}) => {
-    const response = await apiClient.get("/jobs/search", { params });
+    const response = await apiClient.post("/jobs/search", params);
     return unwrap(response);
   },
 

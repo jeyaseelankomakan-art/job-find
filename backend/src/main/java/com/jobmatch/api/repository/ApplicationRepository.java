@@ -54,8 +54,8 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     /**
      * Find top recommended jobs for user (match score >= 55%)
      */
-    @Query("SELECT a FROM Application a WHERE a.userId = :userId AND a.matchScore >= 55 ORDER BY a.matchScore DESC LIMIT 20")
-    List<Application> findRecommendedJobsForUser(@Param("userId") Long userId);
+    @Query("SELECT a FROM Application a WHERE a.userId = :userId AND a.matchScore >= 55 ORDER BY a.matchScore DESC")
+    List<Application> findRecommendedJobsForUser(@Param("userId") Long userId, Pageable pageable);
     
     /**
      * Count applications by status

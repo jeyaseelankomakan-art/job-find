@@ -5,6 +5,7 @@ import com.jobmatch.api.model.dto.CompanyRequest;
 import com.jobmatch.api.model.entity.Company;
 import com.jobmatch.api.model.entity.User;
 import com.jobmatch.api.service.CompanyService;
+import com.jobmatch.api.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,6 +28,9 @@ public class CompanyController {
     
     @Autowired
     private CompanyService companyService;
+    
+    @Autowired
+    private UserService userService;
     
     /**
      * GET /api/v1/companies/{id}
@@ -106,7 +110,7 @@ public class CompanyController {
         log.info("POST /companies, company: {}", request.getName());
         
         // Extract user ID from authentication
-        Long userId = Long.parseLong(authentication.getName());
+        Long userId = userService.getUserByEmail(authentication.getName()).getId();
         
         Company company = companyService.createCompany(request, userId);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -126,7 +130,7 @@ public class CompanyController {
         log.info("PUT /companies/{}", id);
         
         // Verify user is admin of company
-        Long userId = Long.parseLong(authentication.getName());
+        Long userId = userService.getUserByEmail(authentication.getName()).getId();
         Boolean isAdmin = companyService.isUserAdminOfCompany(userId, id);
         
         if (!isAdmin) {

@@ -5,6 +5,7 @@ import lombok.*;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Company Entity
@@ -68,9 +69,11 @@ public class Company {
     
     // Relationships
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Job> jobs;
     
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<CompanyAdmin> admins;
     
     @PrePersist

@@ -2,6 +2,7 @@ package com.jobmatch.api.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,6 +26,7 @@ public class User {
     @Column(nullable = false, unique = true, length = 255)
     private String email;
     
+    @JsonIgnore
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
     

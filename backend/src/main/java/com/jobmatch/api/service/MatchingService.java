@@ -185,7 +185,7 @@ public class MatchingService {
         int userYears = user.getYearsOfExperience();
         int requiredYears = getMinYearsForLevel(job.getExperienceLevel());
         
-        if (userYears >= requiredYears) {
+        if (userYears >= requiredYears || requiredYears == 0) {
             return 100.0;
         } else {
             // Partial credit based on how close user is to requirement
@@ -286,6 +286,10 @@ public class MatchingService {
         if (userExpected < jobMin) {
             double deficit = jobMin - userExpected;
             double jobRange = jobMax - jobMin;
+            
+            if (jobRange == 0) {
+                return 50.0;
+            }
             
             return 100.0 - (deficit / jobRange) * 50.0;
         }

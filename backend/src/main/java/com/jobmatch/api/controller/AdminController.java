@@ -5,6 +5,7 @@ import com.jobmatch.api.model.entity.AdminLog;
 import com.jobmatch.api.model.entity.Company;
 import com.jobmatch.api.model.entity.User;
 import com.jobmatch.api.service.AdminService;
+import com.jobmatch.api.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,9 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
     
+    @Autowired
+    private UserService userService;
+    
     /**
      * POST /api/v1/admin/users/{userId}/block
      * Block user
@@ -37,7 +41,7 @@ public class AdminController {
             Authentication authentication) {
         log.info("POST /admin/users/{}/block", userId);
         
-        Long adminId = Long.parseLong(authentication.getName());
+        Long adminId = userService.getUserByEmail(authentication.getName()).getId();
         User user = adminService.blockUser(userId, adminId, reason);
         
         return ResponseEntity.ok(new ApiResponse<>(true, "User blocked successfully", user));
@@ -54,7 +58,7 @@ public class AdminController {
             Authentication authentication) {
         log.info("POST /admin/users/{}/unblock", userId);
         
-        Long adminId = Long.parseLong(authentication.getName());
+        Long adminId = userService.getUserByEmail(authentication.getName()).getId();
         User user = adminService.unblockUser(userId, adminId);
         
         return ResponseEntity.ok(new ApiResponse<>(true, "User unblocked successfully", user));
@@ -71,7 +75,7 @@ public class AdminController {
             Authentication authentication) {
         log.info("POST /admin/companies/{}/verify", companyId);
         
-        Long adminId = Long.parseLong(authentication.getName());
+        Long adminId = userService.getUserByEmail(authentication.getName()).getId();
         Company company = adminService.verifyCompany(companyId, adminId);
         
         return ResponseEntity.ok(new ApiResponse<>(true, "Company verified successfully", company));

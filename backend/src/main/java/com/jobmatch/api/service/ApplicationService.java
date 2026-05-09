@@ -171,7 +171,7 @@ public class ApplicationService {
      */
     public List<Application> getRecommendedJobs(Long userId) {
         log.debug("Getting recommended jobs for user: {}", userId);
-        return applicationRepository.findRecommendedJobsForUser(userId);
+        return applicationRepository.findRecommendedJobsForUser(userId, PageRequest.of(0, 20));
     }
     
     /**

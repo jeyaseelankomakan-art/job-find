@@ -4,7 +4,7 @@
 
 **Project**: Job Matching & Career Connection Platform
 **Duration**: 16 weeks (MVP)
-**Team Size**: 5-6 developers
+**Team Size**: 1 developer
 **Tech Stack**: Spring Boot + React + MySQL
 
 ---

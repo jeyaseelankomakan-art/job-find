@@ -1,5 +1,6 @@
 package com.jobmatch.api.controller;
 
+import com.jobmatch.api.model.dto.ApiResponse;
 import com.jobmatch.api.model.dto.AuthResponse;
 import com.jobmatch.api.model.dto.LoginRequest;
 import com.jobmatch.api.model.dto.RegisterRequest;
@@ -21,7 +22,6 @@ import jakarta.validation.Valid;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class AuthController {
     
     @Autowired
@@ -137,33 +137,7 @@ public class AuthController {
         }
     }
     
-    /**
-     * Generic API Response wrapper
-     */
-    public static class ApiResponse<T> {
-        private boolean success;
-        private String message;
-        private T data;
-        
-        public ApiResponse(boolean success, String message, T data) {
-            this.success = success;
-            this.message = message;
-            this.data = data;
-        }
-        
-        // Getters
-        public boolean isSuccess() {
-            return success;
-        }
-        
-        public String getMessage() {
-            return message;
-        }
-        
-        public T getData() {
-            return data;
-        }
-    }
+
     
     /**
      * Refresh token request DTO

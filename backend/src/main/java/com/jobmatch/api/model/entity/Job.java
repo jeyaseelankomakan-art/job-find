@@ -5,6 +5,7 @@ import lombok.*;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Job Entity
@@ -87,12 +88,15 @@ public class Job {
     // Relationships
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", insertable = false, updatable = false)
+    @JsonIgnore
     private Company company;
     
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<JobSkill> skills;
     
     @OneToMany(mappedBy = "job", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Application> applications;
     
     @PrePersist
