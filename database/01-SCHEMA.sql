@@ -75,7 +75,7 @@ CREATE TABLE companies (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last update',
     
     -- Constraints
-    FOREIGN KEY (verified_by) REFERENCES users(id),
+    FOREIGN KEY (verified_by) REFERENCES users(id) ON DELETE SET NULL,
     
     -- Indexes
     INDEX idx_status (status),
@@ -179,12 +179,12 @@ CREATE TABLE jobs (
     application_count INT DEFAULT 0 COMMENT 'Number of applications',
     view_count INT DEFAULT 0 COMMENT 'Number of views',
     
-    created_by BIGINT NOT NULL COMMENT 'User who created job',
+    created_by BIGINT COMMENT 'User who created job',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last update',
     
     -- Constraints
     FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE,
-    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
     
     -- Indexes (Critical for search performance)
     INDEX idx_company_id (company_id),
@@ -244,7 +244,7 @@ CREATE TABLE applications (
     -- Constraints
     FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (reviewed_by) REFERENCES users(id),
+    FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL,
     UNIQUE KEY unique_job_user_application (job_id, user_id) COMMENT 'Prevent duplicate applications',
     
     -- Indexes (Critical for filtering)
@@ -270,7 +270,7 @@ CREATE TABLE application_history (
     
     -- Constraints
     FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE,
-    FOREIGN KEY (changed_by) REFERENCES users(id),
+    FOREIGN KEY (changed_by) REFERENCES users(id) ON DELETE SET NULL,
     
     -- Indexes
     INDEX idx_application_id (application_id),
@@ -339,7 +339,7 @@ CREATE TABLE contact_requests (
 -- ============================================================
 CREATE TABLE admin_logs (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    admin_id BIGINT NOT NULL COMMENT 'Admin who performed action',
+    admin_id BIGINT COMMENT 'Admin who performed action',
     action_type ENUM('USER_BLOCKED', 'USER_UNBLOCKED', 'COMPANY_VERIFIED', 'COMPANY_REJECTED', 'JOB_REMOVED', 'APPLICATION_REJECTED', 'REPORT_RESOLVED', 'ROLE_CHANGED') NOT NULL COMMENT 'Type of action',
     target_entity_type VARCHAR(50) COMMENT 'Entity type affected (USER, COMPANY, JOB, etc)',
     target_entity_id BIGINT COMMENT 'ID of entity affected',
@@ -347,7 +347,7 @@ CREATE TABLE admin_logs (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'When action was performed',
     
     -- Constraints
-    FOREIGN KEY (admin_id) REFERENCES users(id),
+    FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE SET NULL,
     
     -- Indexes
     INDEX idx_admin_id (admin_id),
@@ -394,8 +394,8 @@ SELECT
 FROM (
     SELECT 
         t.TABLE_NAME,
-        t.TABLE_ROWS,
-        t.DATA_LENGTH,
+        MAX(t.TABLE_ROWS) as TABLE_ROWS,
+        MAX(t.DATA_LENGTH) as DATA_LENGTH,
         COUNT(c.COLUMN_NAME) as COLUMN_COUNT
     FROM INFORMATION_SCHEMA.TABLES t
     LEFT JOIN INFORMATION_SCHEMA.COLUMNS c 
